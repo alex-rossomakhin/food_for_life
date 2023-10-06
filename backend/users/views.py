@@ -6,7 +6,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from users.models import User, Subscriptions
+from users.models import Subscriptions, User
 from users.serializers import SubscriptionsSerializer
 
 
@@ -26,27 +26,21 @@ class CustomUserViewSet(UserViewSet):
         author_id = self.kwargs.get('id')
         author = get_object_or_404(User, id=author_id)
         if request.method == 'POST':
-            if author == user:
-                return Response({'errors': 'Нельзя подписаться на себя'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            if Subscriptions.objects.filter(user=user, author=author):
-                return Response({'errors': 'Подписка уже создана'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            Subscriptions.objects.create(user=user, author=author)
             serializer = SubscriptionsSerializer(author,
                                                  data=request.data,
-                                                 context={"request": request})
-            serializer.is_valid(raise_exception=True)
-            return Response(serializer.data,
-                            status=status.HTTP_201_CREATED)
-        else:
-            get_object_or_404(
-                Subscriptions, user=self.request.user,
-                author=author_id).delete()
-            return Response(
-                {'message': ' Подписка удалена '},
-                status=status.HTTP_204_NO_CONTENT
-            )
+                                                 context={'request': request,
+                                                          'author': author})
+            if serializer.is_valid(raise_exception=True):
+                Subscriptions.objects.create(user=user, author=author)
+                return Response(serializer.data,
+                                status=status.HTTP_201_CREATED)
+        get_object_or_404(
+            Subscriptions, user=self.request.user,
+            author=author_id).delete()
+        return Response(
+            {'message': ' Подписка удалена '},
+            status=status.HTTP_204_NO_CONTENT
+        )
 
     @action(
         detail=False,
@@ -54,9 +48,7 @@ class CustomUserViewSet(UserViewSet):
     )
     def subscriptions(self, request):
         user = request.user
-        subscriptions = (Subscriptions.objects.filter(
-            user=user)).values_list("author")
-        users = User.objects.filter(pk__in=subscriptions)
+        users = User.objects.filter(author__user=user)
         serializer = SubscriptionsSerializer(
-            users, many=True, context={"request": request})
+            users, many=True, context={'request': request})
         return Response(serializer.data)

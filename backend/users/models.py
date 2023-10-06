@@ -22,6 +22,7 @@ class Subscriptions(models.Model):
     )
 
     class Meta:
+        ordering = ('-author_id',)
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписка на автора'
         constraints = [

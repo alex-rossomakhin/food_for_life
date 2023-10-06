@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from djoser.serializers import UserSerializer, UserCreateSerializer
+from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
@@ -28,8 +28,8 @@ class CustomCreateUserSerializer(UserCreateSerializer):
 
 
 class CustomUserSerializer(UserSerializer):
-
     """Сериализатор отображения юзера"""
+
     is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
@@ -44,9 +44,9 @@ class CustomUserSerializer(UserSerializer):
         )
 
     def get_is_subscribed(self, obj):
-        request = self.context.get('request')
+        request = self.context['request']
         user = request.user
-        return Subscriptions.objects.filter(user=user, author=obj).exists()
+        return (obj.author.filter(user=user)).exists()
 
 
 class SubscriptionsRecipeSerializer(serializers.ModelSerializer):
@@ -74,9 +74,20 @@ class SubscriptionsSerializer(CustomUserSerializer):
                   + ('recipes', 'recipes_count'))
         read_only_fields = ('email', 'username')
 
+    def validate(self, attrs):
+        author = self.context['author']
+        request = self.context['request']
+        user = request.user
+        if author == user:
+            raise serializers.ValidationError(
+                    'Нельзя подписаться на себя!')
+        if Subscriptions.objects.filter(user=user, author=author):
+            raise serializers.ValidationError('Подписка уже создана')
+        return attrs
+
     def get_recipes(self, obj):
-        request = self.context.get('request')
-        recipes = Recipe.objects.filter(author=obj)
+        request = self.context['request']
+        recipes = obj.recipes.all()
         recipes_limit = request.query_params.get('recipes_limit')
         if recipes_limit:
             recipes_limit = int(recipes_limit)
@@ -86,5 +97,5 @@ class SubscriptionsSerializer(CustomUserSerializer):
         return serializer.data
 
     def get_recipes_count(self, obj):
-        recipes = Recipe.objects.filter(author=obj)
+        recipes = obj.recipes.all()
         return recipes.count()
