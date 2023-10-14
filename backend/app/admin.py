@@ -1,5 +1,6 @@
 from django.contrib import admin
-from app.models import Tag, Ingredient, Recipe, IngredientInRecipe
+
+from app.models import Ingredient, IngredientInRecipe, Recipe, Tag
 
 
 class TegAdmin(admin.ModelAdmin):
@@ -21,6 +22,7 @@ class IngredientAdmin(admin.ModelAdmin):
 class IngredientRecipe(admin.TabularInline):
     model = IngredientInRecipe
     extra = 3
+    min_num = 1
 
 
 class RecipeAdmin(admin.ModelAdmin):

@@ -3,20 +3,21 @@ from django.db.models import Sum
 from django_filters.rest_framework import DjangoFilterBackend
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, status
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from app.filters import RecipeFilter
-from app.models import (Recipe, Tag,
-                        Ingredient, Favorite,
-                        ShoppingList, IngredientInRecipe)
+from app.models import (Favorite, Ingredient,
+                        IngredientInRecipe, Recipe,
+                        ShoppingList, Tag)
 from app.permission import IsAuthorOrReadOnly, IsAdminOrReadOnly
 from app.serializers import (TagSerializer, IngredientSerializer,
                              RecipeReadSerializer, RecipeCreateSerializer,
-                             ShortRecipeSerializer)
+                             ShortRecipeSerializer, FavoriteSerializer,
+                             ShoppingCartSerializer)
 
 User = get_user_model()
 
@@ -26,6 +27,8 @@ class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = None
+    # попробовать поставить пагинация в нон 
 
 
 class IngredientViewSet(viewsets.ModelViewSet):
@@ -58,27 +61,26 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated]
     )
     def favorite(self, request, pk):
-
         if request.method == 'POST':
-            if Favorite.objects.filter(user=request.user, recipe__id=pk):
-                return Response({'errors': 'Рецепт уже добавлен!'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            recipe = get_object_or_404(Recipe, id=pk)
-            Favorite.objects.create(user=request.user, recipe=recipe)
-            serializers = ShortRecipeSerializer(recipe)
-            return Response(
-                {'message': 'Рецепт добавлен в избранное.',
-                 'data': serializers.data},
-                status=status.HTTP_201_CREATED
-            )
-        else:
-            get_object_or_404(
-                Favorite, user=self.request.user,
-                recipe=get_object_or_404(Recipe, pk=pk)).delete()
-            return Response(
-                {'message': 'Рецепт успешно удален из избранного'},
-                status=status.HTTP_204_NO_CONTENT
-            )
+            serializers = FavoriteSerializer(data=request.data,
+                                             context={'request': request,
+                                                      'pk': pk})
+            if serializers.is_valid(raise_exception=True):
+                recipe = get_object_or_404(Recipe, id=pk)
+                Favorite.objects.create(user=request.user, recipe=recipe)
+                serializers = ShortRecipeSerializer(recipe)
+                return Response(
+                    {'message': 'Рецепт добавлен в избранное.',
+                     'data': serializers.data},
+                    status=status.HTTP_201_CREATED
+                )
+        get_object_or_404(
+            Favorite, user=self.request.user,
+            recipe=get_object_or_404(Recipe, pk=pk)).delete()
+        return Response(
+            {'message': 'Рецепт успешно удален из избранного'},
+            status=status.HTTP_204_NO_CONTENT
+        )
 
     @action(
         detail=True,
@@ -87,25 +89,25 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def shopping_cart(self, request, pk):
         if request.method == 'POST':
-            if ShoppingList.objects.filter(user=request.user, recipe__id=pk):
-                return Response({'errors': 'Список покупок уже добавлен!'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            recipe = get_object_or_404(Recipe, id=pk)
-            ShoppingList.objects.create(user=request.user, recipe=recipe)
-            serializers = ShortRecipeSerializer(recipe)
-            return Response(
-                {'message': 'Список покупок добавлен.',
-                 'data': serializers.data},
-                status=status.HTTP_201_CREATED
-            )
-        else:
-            get_object_or_404(
-                ShoppingList, user=self.request.user,
-                recipe=get_object_or_404(Recipe, pk=pk)).delete()
-            return Response(
-                {'message': 'Список покупок удален'},
-                status=status.HTTP_204_NO_CONTENT
-            )
+            serializers = ShoppingCartSerializer(data=request.data,
+                                                 context={'request': request,
+                                                          'pk': pk})
+            if serializers.is_valid(raise_exception=True):
+                recipe = get_object_or_404(Recipe, id=pk)
+                ShoppingList.objects.create(user=request.user, recipe=recipe)
+                serializers = ShortRecipeSerializer(recipe)
+                return Response(
+                    {'message': 'Список покупок добавлен.',
+                     'data': serializers.data},
+                    status=status.HTTP_201_CREATED
+                )
+        get_object_or_404(
+            ShoppingList, user=self.request.user,
+            recipe=get_object_or_404(Recipe, pk=pk)).delete()
+        return Response(
+            {'message': 'Список покупок удален'},
+            status=status.HTTP_204_NO_CONTENT
+        )
 
     @action(
         detail=False,
@@ -118,10 +120,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'ingredient__name', 'ingredient__measurement_unit').annotate(
                 amount=Sum('amount'))
         shopping_cart_list = ''
-        for i in recipe:
-            shopping_cart_list += (f"{i['ingredient__name']}"
-                                   f"({i['ingredient__measurement_unit']})"
-                                   f" - {i['amount']}\n")
+        for value in recipe:
+            shopping_cart_list += (f"{value['ingredient__name']}"
+                                   f"({value['ingredient__measurement_unit']})"
+                                   f" - {value['amount']}\n")
 
         response = HttpResponse(shopping_cart_list, headers={
             'Content-Type': 'text/plain',

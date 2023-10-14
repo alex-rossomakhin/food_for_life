@@ -1,10 +1,11 @@
 from django.contrib.auth import get_user_model
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
-from django.core.validators import MaxValueValidator, MinValueValidator
-
 
 User = get_user_model()
+MinValue = 1
+MaxValue = 32000
 
 
 class Tag(models.Model):
@@ -28,6 +29,7 @@ class Tag(models.Model):
     class Meta:
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
+        ordering = ('name',)
 
     def __str__(self):
         return f'{self.name}'
@@ -49,6 +51,7 @@ class Ingredient(models.Model):
     class Meta:
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
+        ordering = ('name',)
 
     def __str__(self):
         return f'{self.name}, {self.measurement_unit}'
@@ -92,12 +95,12 @@ class Recipe(models.Model):
         verbose_name='Текст рецепта'
     )
 
-    cooking_time = models.IntegerField(
+    cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления',
         default=0,
         validators=[
-            MinValueValidator(1),
-            MaxValueValidator(1440)],
+            MinValueValidator(MinValue),
+            MaxValueValidator(MaxValue)],
     )
 
     class Meta:
@@ -122,11 +125,12 @@ class IngredientInRecipe(models.Model):
     )
     amount = models.PositiveSmallIntegerField(
         validators=[
-            MinValueValidator(1),
-        ],
+            MinValueValidator(MinValue),
+            MaxValueValidator(MaxValue)],
     )
 
     class Meta:
+        ordering = ('ingredient',)
         verbose_name = 'Связка рецепта и ингредиента'
         verbose_name_plural = 'Связка рецепта и ингредиента'
 
@@ -150,6 +154,7 @@ class Favorite(models.Model):
     )
 
     class Meta:
+        ordering = ('user',)
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранное'
         constraints = [
@@ -178,6 +183,7 @@ class ShoppingList(models.Model):
     )
 
     class Meta:
+        ordering = ('user',)
         verbose_name = 'Список покупок'
         verbose_name_plural = 'Список покупок'
         constraints = [

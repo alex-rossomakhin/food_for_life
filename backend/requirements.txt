@@ -1,6 +1,9 @@
+Django==3.2.16
 djoser==2.1.0
 djangorestframework-simplejwt==4.7.2
 drf-extra-fields==3.2.1
 Pillow==10.0.0
 django-filter==23.3
 flake8==6.1.0
+psycopg2-binary==2.9.3
+django-cors-headers==3.13.0
