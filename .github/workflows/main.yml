@@ -33,6 +33,7 @@ jobs:
         POSTGRES_DB: django_db
         DB_HOST: 127.0.0.1
         DB_PORT: 5432
+      run:
 
   build_and_push_to_docker_hub:
     name: Push Docker image to DockerHub
