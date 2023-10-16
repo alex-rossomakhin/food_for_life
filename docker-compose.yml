@@ -4,7 +4,6 @@ volumes:
   pg_data:
   # Новый volume — для статических файлов
   static:
-  media:
 
 services:
   db:
@@ -18,7 +17,6 @@ services:
     # Тут подключаем volume к backend
     volumes:
       - static:/backend_static
-      - media:/app/media/
   frontend:
     env_file: .env
     build: ./frontend/
@@ -31,4 +29,4 @@ services:
     volumes:
       - static:/staticfiles/
     ports:
-      - 8000:80 
+      - 8000:80
