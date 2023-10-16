@@ -25,6 +25,7 @@ services:
       - static:/frontend_static
   gateway:
     build: ./nginx/
+    # build: ./gateway/
     # А тут подключаем volume со статикой к gateway
     volumes:
       - static:/staticfiles/
