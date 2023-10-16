@@ -4,7 +4,6 @@ version: '3'
 volumes:
   pg_data_production:
   static_volume:
-  media:
 
 # Всё отличие — заменяем build на image и указываем, какой образ использовать
 services:
@@ -18,7 +17,6 @@ services:
     env_file: .env
     volumes:
       - static_volume:/backend_static
-      - media:/media
   frontend:
     image: alexrossom/foodgram_frontend  # Качаем с Docker Hub
     env_file: .env
@@ -30,6 +28,5 @@ services:
     env_file: .env
     volumes:
       - static_volume:/staticfiles/
-      - media:/media
     ports:
       - 8500:80
