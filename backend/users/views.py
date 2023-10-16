@@ -44,11 +44,13 @@ class CustomUserViewSet(UserViewSet):
 
     @action(
         detail=False,
-        permission_classes=[IsAuthenticated]
+        permission_classes=[IsAuthenticated],
+        pagination_class=LimitOffsetPagination
     )
     def subscriptions(self, request):
         user = request.user
         users = User.objects.filter(author__user=user)
+        pages = self.paginate_queryset(users)
         serializer = SubscriptionsSerializer(
-            users, many=True, context={'request': request})
-        return Response(serializer.data)
+            pages, many=True, context={'request': request})
+        return self.get_paginated_response(serializer.data)

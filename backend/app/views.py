@@ -9,7 +9,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from app.filters import RecipeFilter
+from app.filters import RecipeFilter, IngredientFilter
 from app.models import (Favorite, Ingredient,
                         IngredientInRecipe, Recipe,
                         ShoppingList, Tag)
@@ -35,6 +35,8 @@ class IngredientViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    filterset_class = IngredientFilter
+    pagination_class = None
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
