@@ -18,7 +18,7 @@ services:
     env_file: .env
     volumes:
       - static_volume:/backend_static
-      - media:/app/media/
+      - media:/app/media
   frontend:
     image: alexrossom/foodgram_frontend  # Качаем с Docker Hub
     env_file: .env
@@ -30,6 +30,6 @@ services:
     env_file: .env
     volumes:
       - static_volume:/staticfiles/
-      - media:/app/media/
+      - media:/media
     ports:
       - 8500:80
