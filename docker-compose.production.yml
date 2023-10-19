@@ -23,7 +23,7 @@ services:
     env_file: .env
     command: cp -r /app/build/. /frontend_static/
     volumes:
-      - static:/static
+      - static:/frontend_static
   gateway:
     image: alexrossom/foodgram_gateway  # Качаем с Docker Hub
     env_file: .env
