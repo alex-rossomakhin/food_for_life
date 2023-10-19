@@ -30,9 +30,7 @@ services:
     image: alexrossom/foodgram_gateway  # Качаем с Docker Hub
     env_file: .env
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - ../frontend/build:/usr/share/nginx/html/
-      - static:/var/html/static/
-      - media:/var/html/media/
+      - static:/static
+      - media:/media
     ports:
       - 8500:80
