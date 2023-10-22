@@ -2,10 +2,10 @@ from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from app.pagination import CustomLimitPagination
 from users.models import Subscriptions, User
 from users.serializers import SubscriptionsSerializer
 
@@ -14,7 +14,7 @@ class CustomUserViewSet(UserViewSet):
     """ Отображение тегов """
     queryset = User.objects.all()
     serializer_class = SubscriptionsSerializer
-    pagination_class = LimitOffsetPagination
+    pagination_class = CustomLimitPagination
 
     @action(
         detail=True,
@@ -45,7 +45,7 @@ class CustomUserViewSet(UserViewSet):
     @action(
         detail=False,
         permission_classes=[IsAuthenticated],
-        pagination_class=LimitOffsetPagination
+        pagination_class=CustomLimitPagination
     )
     def subscriptions(self, request):
         user = request.user

@@ -5,7 +5,6 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -13,6 +12,7 @@ from app.filters import RecipeFilter, IngredientFilter
 from app.models import (Favorite, Ingredient,
                         IngredientInRecipe, Recipe,
                         ShoppingList, Tag)
+from app.pagination import CustomLimitPagination
 from app.permission import IsAuthorOrReadOnly, IsAdminOrReadOnly
 from app.serializers import (TagSerializer, IngredientSerializer,
                              RecipeReadSerializer, RecipeCreateSerializer,
@@ -46,7 +46,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthorOrReadOnly | IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
-    pagination_class = LimitOffsetPagination
+    pagination_class = CustomLimitPagination
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
