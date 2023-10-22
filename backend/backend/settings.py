@@ -6,13 +6,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'default_stub_key')
-# SECRET_KEY = 'django-insecure-gcs!19qu8j*k=7$p_dmfet4)!n^ybcmy$=pi7itx)ah%peck=4'
 
 # DEBUG = os.getenv('DEBUG', 'False') == 'True'
 DEBUG = True
 
-# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
-ALLOWED_HOSTS = ['158.160.69.25', '127.0.0.1', 'localhost', 'taskirossomahin.ddns.net']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+# ALLOWED_HOSTS = ['158.160.69.25', '127.0.0.1', 'localhost', 'taskirossomahin.ddns.net']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
