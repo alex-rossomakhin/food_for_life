@@ -6,8 +6,8 @@ from rest_framework.fields import IntegerField
 from app.models import Ingredient, IngredientInRecipe, Recipe, Tag
 from users.serializers import CustomUserSerializer
 
-MinValue = 1
-MaxValue = 32000
+MINVALUE = 1
+MAXVALUE = 32000
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -40,10 +40,10 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     ingredients = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
     image = Base64ImageField()
-    is_favorited = serializers.SerializerMethodField(read_only=True)
-    is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
-    cooking_time = serializers.IntegerField(max_value=MaxValue,
-                                            min_value=MinValue)
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
+    cooking_time = serializers.IntegerField(max_value=MAXVALUE,
+                                            min_value=MINVALUE)
 
     class Meta:
         model = Recipe
@@ -90,7 +90,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
 
 class IngredientInRecipeSerializer(serializers.ModelSerializer):
     id = IntegerField(write_only=True)
-    amount = serializers.IntegerField(max_value=MaxValue, min_value=MinValue)
+    amount = serializers.IntegerField(max_value=MAXVALUE, min_value=MINVALUE)
 
     class Meta:
         model = IngredientInRecipe

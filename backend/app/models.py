@@ -4,8 +4,8 @@ from django.db import models
 from django.db.models import UniqueConstraint
 
 User = get_user_model()
-MinValue = 1
-MaxValue = 32000
+MINVALUE = 1
+MAXVALUE = 32000
 
 
 class Tag(models.Model):
@@ -99,8 +99,8 @@ class Recipe(models.Model):
         verbose_name='Время приготовления',
         default=0,
         validators=[
-            MinValueValidator(MinValue),
-            MaxValueValidator(MaxValue)],
+            MinValueValidator(MINVALUE),
+            MaxValueValidator(MAXVALUE)],
     )
 
     class Meta:
@@ -125,8 +125,8 @@ class IngredientInRecipe(models.Model):
     )
     amount = models.PositiveSmallIntegerField(
         validators=[
-            MinValueValidator(MinValue),
-            MaxValueValidator(MaxValue)],
+            MinValueValidator(MINVALUE),
+            MaxValueValidator(MAXVALUE)],
     )
 
     class Meta:

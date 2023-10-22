@@ -66,15 +66,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializers = FavoriteSerializer(data=request.data,
                                              context={'request': request,
                                                       'pk': pk})
-            if serializers.is_valid(raise_exception=True):
-                recipe = get_object_or_404(Recipe, id=pk)
-                Favorite.objects.create(user=request.user, recipe=recipe)
-                serializers = ShortRecipeSerializer(recipe)
-                return Response(
-                    {'message': 'Рецепт добавлен в избранное.',
-                     'data': serializers.data},
-                    status=status.HTTP_201_CREATED
-                )
+            serializers.is_valid(raise_exception=True)
+            recipe = get_object_or_404(Recipe, id=pk)
+            Favorite.objects.create(user=request.user, recipe=recipe)
+            serializers = ShortRecipeSerializer(recipe)
+            return Response(
+                {'message': 'Рецепт добавлен в избранное.',
+                 'data': serializers.data},
+                status=status.HTTP_201_CREATED
+            )
         get_object_or_404(
             Favorite, user=self.request.user,
             recipe=get_object_or_404(Recipe, pk=pk)).delete()
@@ -93,15 +93,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializers = ShoppingCartSerializer(data=request.data,
                                                  context={'request': request,
                                                           'pk': pk})
-            if serializers.is_valid(raise_exception=True):
-                recipe = get_object_or_404(Recipe, id=pk)
-                ShoppingList.objects.create(user=request.user, recipe=recipe)
-                serializers = ShortRecipeSerializer(recipe)
-                return Response(
-                    {'message': 'Список покупок добавлен.',
-                     'data': serializers.data},
-                    status=status.HTTP_201_CREATED
-                )
+            serializers.is_valid(raise_exception=True)
+            recipe = get_object_or_404(Recipe, id=pk)
+            ShoppingList.objects.create(user=request.user, recipe=recipe)
+            serializers = ShortRecipeSerializer(recipe)
+            return Response(
+                {'message': 'Список покупок добавлен.',
+                 'data': serializers.data},
+                status=status.HTTP_201_CREATED
+            )
         get_object_or_404(
             ShoppingList, user=self.request.user,
             recipe=get_object_or_404(Recipe, pk=pk)).delete()
