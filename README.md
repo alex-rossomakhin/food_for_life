@@ -15,14 +15,33 @@
 Возможность добавить рецепт в список покупок.
 Возможность скачать список покупок в PDF формате.
 Фильтрация по полям.
+
+## Локальный запуск проект 
+* Скопировать в /backend файл .env.example в .env с соответствующими значениями;
+* sudo docker compose -f docker-compose.develop.yaml up -d --build
+* sudo docker compose exec backend python manage.py migrate --noinput - применение миграций
+* sudo docker compose exec backend python manage.py collectstatic --no-input - сбор статики
+
+### Проект доступен по адресу:
+http://localhost/
+
+### Документация и примеры использования api:
+http://localhost/docs/
+
+### Админ-панель:
+http://localhost/admin/
+
 ## Технологи
-• Python 3.9
-• Django 3.2.6
-• Django Rest Framework 3.12.4
-• Authtoken
-• Docker
-• Docker-compose
-• PostgreSQL
-• Gunicorn
-• Nginx
-• GitHub Actions
+* Python 3.9
+* Django 3.2.6
+* Django Rest Framework 3.12.4
+* Authtoken
+* Docker
+* Docker-compose
+* PostgreSQL
+* Gunicorn
+* Nginx
+* GitHub Actions
+
+## Автор
+[alex-rossomakhin](https://github.com/alex-rossomakhin)
