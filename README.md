@@ -16,13 +16,13 @@
 Возможность скачать список покупок в PDF формате.
 Фильтрация по полям.
 ## Технологи
-Python 3.9
-Django 3.2.6
-Django Rest Framework 3.12.4
-Authtoken
-Docker
-Docker-compose
-PostgreSQL
-Gunicorn
-Nginx
-GitHub Actions
+• Python 3.9
+• Django 3.2.6
+• Django Rest Framework 3.12.4
+• Authtoken
+• Docker
+• Docker-compose
+• PostgreSQL
+• Gunicorn
+• Nginx
+• GitHub Actions
