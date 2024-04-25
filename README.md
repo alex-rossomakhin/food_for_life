@@ -44,4 +44,4 @@ http://localhost/admin/
 * GitHub Actions
 
 ## Автор
-[alex-rossomakhin](https://github.com/alex-rossomakhin)
+[Alexey Rossomakhin](https://github.com/alex-rossomakhin)
